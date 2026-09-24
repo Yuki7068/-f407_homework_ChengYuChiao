@@ -1,0 +1,6 @@
+D:/stm32f407_hw_template/build/Debug/CMakeFiles/STM1.1.dir
+D:/stm32f407_hw_template/build/Debug/CMakeFiles/edit_cache.dir
+D:/stm32f407_hw_template/build/Debug/CMakeFiles/rebuild_cache.dir
+D:/stm32f407_hw_template/build/Debug/cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir
+D:/stm32f407_hw_template/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+D:/stm32f407_hw_template/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
