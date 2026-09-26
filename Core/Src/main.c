@@ -19,10 +19,16 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#define LED_RED_GPIO_Port GPIOE
+#define LED_RED_Pin GPIO_PIN_5
+
+#define LED_GREEN_GPIO_Port GPIOE
+#define LED_GREEN_Pin GPIO_PIN_6
 
 /* USER CODE END Includes */
 
@@ -44,7 +50,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t receiveData [2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,6 +61,24 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+  HAL_UART_Transmit_IT(&huart1, receiveData, 2);
+    GPIO_PinState state = GPIO_PIN_SET;
+    if (receiveData[1] == '0')
+    {
+      state = GPIO_PIN_RESET;
+    }
+    if (receiveData[0] == 'R')
+    {
+      HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, state);
+
+    }
+    else if (receiveData[0] == 'G')
+    {
+      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, state);
+    }
+    HAL_UART_Receive_IT(&huart1, receiveData, 2);
+}
 
 /* USER CODE END 0 */
 
@@ -88,29 +112,35 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM9_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_UART_Receive_IT(&huart1, receiveData, 2);
+ 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);
+  
 
   while (1)
   { 
     // HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_SET);
+    // HAL_UART_Transmit(&huart1, (uint8_t*)message, sizeof(message) - 1,100);
+    // HAL_Delay(1000);  
+    // HAL_UART_Receive(&huart1, receiveData, 2, HAL_MAX_DEYAL);
+    // HAL_UART_Transmit(&huart1, receiveData, 2, 100);
     
-    
-    for (int i = 0; i < 250; i++)
-    {
-      __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, i);
-      HAL_Delay(10);
-    }
-    for (int i = 250 ; i > 0; i--)
-    {
-      __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, i);
-      HAL_Delay(10);
-    }
+  }
+//     for (int i = 0; i < 250; i++)
+//     {
+//       __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, i);
+//       HAL_Delay(10);
+//     }
+//     for (int i = 250 ; i > 0; i--)
+//     {
+//       __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, i);
+//       HAL_Delay(10);
+//     }
 
 
 
@@ -118,7 +148,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+//   }
   /* USER CODE END 3 */
 }
 

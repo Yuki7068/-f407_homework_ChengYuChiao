@@ -15,3 +15,9 @@
 
 ![代码修改截图](image/changed_code1.png.)
 ![代码修改截图](image/changed_code2.png)
+
+## 2026_9_24
+**任务截图：**
+![MX配置截图](image/MX2.png)
+
+![代码修改截图](image/changed_code3.png.)
