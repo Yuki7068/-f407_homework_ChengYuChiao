@@ -21,3 +21,17 @@
 ![MX配置截图](image/MX2.png)
 
 ![代码修改截图](image/changed_code3.png.)
+
+## 2026_9_26
+**任务截图：**
+<!-- Hello,World! -->
+![运行结果截图](image/imagechanged_code4.png)
+
+![代码修改截图](image/changed_code4.png)
+**任务截图：**
+<!-- 小灯 -->
+![运行结果截图](image/imagechanged_code5.png)
+
+![代码修改截图](image/changed_code5.png)
+
+![MX配置截图](image/MX3.png)

@@ -18,17 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "can.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#define LED_RED_GPIO_Port GPIOE
-#define LED_RED_Pin GPIO_PIN_5
 
-#define LED_GREEN_GPIO_Port GPIOE
-#define LED_GREEN_Pin GPIO_PIN_6
 
 /* USER CODE END Includes */
 
@@ -50,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t receiveData [2];
+// uint8_t receiveData [2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,24 +58,24 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-  HAL_UART_Transmit_IT(&huart1, receiveData, 2);
-    GPIO_PinState state = GPIO_PIN_SET;
-    if (receiveData[1] == '0')
-    {
-      state = GPIO_PIN_RESET;
-    }
-    if (receiveData[0] == 'R')
-    {
-      HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, state);
+// void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+//   HAL_UART_Transmit_IT(&huart1, receiveData, 2);
+//     GPIO_PinState state = GPIO_PIN_SET;
+//     if (receiveData[1] == '0')
+//     {
+//       state = GPIO_PIN_RESET;
+//     }
+//     if (receiveData[0] == 'R')
+//     {
+//       HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, state);
 
-    }
-    else if (receiveData[0] == 'G')
-    {
-      HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, state);
-    }
-    HAL_UART_Receive_IT(&huart1, receiveData, 2);
-}
+//     }
+//     else if (receiveData[0] == 'G')
+//     {
+//       HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, state);
+//     }
+//     HAL_UART_Receive_IT(&huart1, receiveData, 2);
+// }
 
 /* USER CODE END 0 */
 
@@ -90,7 +87,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -113,9 +110,20 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM9_Init();
   MX_USART1_UART_Init();
+  MX_CAN1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart1, receiveData, 2);
- 
+  // HAL_UART_Receive_IT(&huart1, receiveData, 2);
+
+  CAN_TxHeaderTypeDef txHeader = {0};
+  txHeader.StdId = 0x713;// TODO 对吗
+  txHeader.ExtId = 0;// TODO对吗
+  txHeader.IDE = CAN_ID_STD;// TODO 不对吧 
+  txHeader.RTR = CAN_RTR_DATA;//TODO 要改吗
+  txHeader.DLC = 6;// TODO 要改吗
+  txHeader.TransmitGlobalTime = DISABLE;
+  /* 0x201 M2006 current, big-endian int16, range typically [-10000, 10000] */
+  uint8_t txData[8] = {};// TODO 构造控制电机的CAN帧。建议电流值：1000
+  uint32_t txMailbox;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,7 +138,7 @@ int main(void)
     // HAL_UART_Receive(&huart1, receiveData, 2, HAL_MAX_DEYAL);
     // HAL_UART_Transmit(&huart1, receiveData, 2, 100);
     
-  }
+  
 //     for (int i = 0; i < 250; i++)
 //     {
 //       __HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, i);
@@ -142,13 +150,16 @@ int main(void)
 //       HAL_Delay(10);
 //     }
 
+    (void)HAL_CAN_AddTxMessage(&hcan1, &txHeader, txData, &txMailbox);
+    
+    HAL_Delay(1000); // TODO 电机的控制频率建议100hz
 
 
     
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//   }
+  }
   /* USER CODE END 3 */
 }
 
@@ -207,14 +218,19 @@ void SystemClock_Config(void)
   */
 void Error_Handler(void)
 {
-  /* USER CODE BEGIN Error_Handler_Debug */
+   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
+
   }
-  /* USER CODE END Error_Handler_Debug */
 }
+  
+  /* USER CODE END Error_Handler_Debug */
+
+
+ 
 #ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
